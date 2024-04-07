@@ -1,4 +1,5 @@
 load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
+load("@graft//tools/build_defs/repo:http.bzl", "http_embedded_archive")
 load("@libtensorflow_defaults//:config.bzl", "LIBTENSORFLOW_PKG_URL")
 
 def tf_repositories(ctx):
@@ -8,7 +9,7 @@ def tf_repositories(ctx):
 
     http_archive(
         name = "libtensorflow_linux_x86_64_cpu",
-        build_file = "@com_github_wamuir_graft//third_party/org_tensorflow/libtensorflow:libtensorflow.BUILD",
+        build_file = "@graft//third_party/org_tensorflow/libtensorflow:libtensorflow.BUILD",
         patch_args = ["-p1"],
         patches = [],
         strip_prefix = "",
@@ -18,7 +19,7 @@ def tf_repositories(ctx):
 
     http_archive(
         name = "libtensorflow_linux_x86_64_gpu",
-        build_file = "@com_github_wamuir_graft//third_party/org_tensorflow/libtensorflow:libtensorflow.BUILD",
+        build_file = "@graft//third_party/org_tensorflow/libtensorflow:libtensorflow.BUILD",
         patch_args = ["-p1"],
         patches = [],
         strip_prefix = "",
@@ -28,7 +29,7 @@ def tf_repositories(ctx):
 
     http_archive(
         name = "libtensorflow_macos_x86_64_cpu",
-        build_file = "@com_github_wamuir_graft//third_party/org_tensorflow/libtensorflow:libtensorflow.BUILD",
+        build_file = "@graft//third_party/org_tensorflow/libtensorflow:libtensorflow.BUILD",
         patch_args = ["-p1"],
         patches = [],
         strip_prefix = "",
@@ -38,7 +39,7 @@ def tf_repositories(ctx):
 
     http_archive(
         name = "libtensorflow_macos_arm_64_cpu",
-        build_file = "@com_github_wamuir_graft//third_party/org_tensorflow/libtensorflow:libtensorflow.BUILD",
+        build_file = "@graft//third_party/org_tensorflow/libtensorflow:libtensorflow.BUILD",
         patch_args = ["-p1"],
         patches = [],
         strip_prefix = "",
@@ -48,7 +49,7 @@ def tf_repositories(ctx):
 
     http_archive(
         name = "libtensorflow_other_build",
-        build_file = "@com_github_wamuir_graft//third_party/org_tensorflow/libtensorflow:libtensorflow.BUILD",
+        build_file = "@graft//third_party/org_tensorflow/libtensorflow:libtensorflow.BUILD",
         urls = [LIBTENSORFLOW_PKG_URL],
     )
 
@@ -58,11 +59,11 @@ def tf_repositories(ctx):
 
     http_archive(
         name = "libtensorflow_proto",
-        build_file = "@com_github_wamuir_graft//third_party/org_tensorflow/libtensorflow_proto:libtensorflow_proto.BUILD",
+        build_file = "@graft//third_party/org_tensorflow/libtensorflow_proto:libtensorflow_proto.BUILD",
         patch_args = ["-p1"],
         patches = [
-            "@com_github_wamuir_graft//third_party/org_tensorflow/libtensorflow_proto:libtensorflow_proto.patch",
-            "@com_github_wamuir_graft//third_party/org_tensorflow/libtensorflow_proto:libtensorflow_proto_tsl.patch",
+            "@graft//third_party/org_tensorflow/libtensorflow_proto:libtensorflow_proto.patch",
+            "@graft//third_party/org_tensorflow/libtensorflow_proto:libtensorflow_proto_tsl.patch",
         ],
         strip_prefix = "libtensorflow-proto-2.16.1",
         urls = ["https://github.com/wamuir/libtensorflow-proto/archive/refs/tags/v2.16.1.tar.gz"],
@@ -75,7 +76,7 @@ def tf_repositories(ctx):
 
     http_archive(
         name = "tensorflow_base_api_def",
-        build_file = "@com_github_wamuir_graft//third_party/org_tensorflow/tensorflow_base_api_def:tensorflow_base_api_def.BUILD",
+        build_file = "@graft//third_party/org_tensorflow/tensorflow_base_api_def:tensorflow_base_api_def.BUILD",
         patch_args = ["-p1"],
         patches = [],
         strip_prefix = "tensorflow-2.16.1/tensorflow/core/api_def/base_api",
@@ -89,10 +90,10 @@ def tf_repositories(ctx):
 
     http_archive(
         name = "tensorflow_go",
-        build_file = "@com_github_wamuir_graft//third_party/org_tensorflow/tensorflow_go:tensorflow_go.BUILD",
+        build_file = "@graft//third_party/org_tensorflow/tensorflow_go:tensorflow_go.BUILD",
         patch_args = ["-p1"],
         patches = [
-            "@com_github_wamuir_graft//third_party/org_tensorflow/tensorflow_go:tensorflow_go_op.patch",
+            "@graft//third_party/org_tensorflow/tensorflow_go:tensorflow_go_op.patch",
         ],
         strip_prefix = "tensorflow-2.16.1/tensorflow/go",
         urls = ["https://github.com/tensorflow/tensorflow/archive/refs/tags/v2.16.1.tar.gz"],
