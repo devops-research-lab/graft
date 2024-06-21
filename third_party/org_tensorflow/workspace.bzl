@@ -55,6 +55,17 @@ def tf_repositories(ctx):
         urls = ["https://github.com/wamuir/libtensorflow-proto/archive/refs/heads/nightly.tar.gz"],
     )
 
+    http_archive(
+        name = "tensorflow_serving_proto",
+        build_file = "@graft//third_party/org_tensorflow/tensorflow_serving_proto:tensorflow_serving_proto.BUILD",
+        patch_args = ["-p1"],
+        patches = [
+            "@graft//third_party/org_tensorflow/tensorflow_serving_proto:tensorflow_serving_proto.patch",
+        ],
+        strip_prefix = "tensorflow-serving-proto-nightly",
+        urls = ["https://github.com/wamuir/tensorflow-serving-proto/archive/refs/heads/nightly.tar.gz"],
+    )
+
     ###########################################################################
     # base api def
     ###########################################################################

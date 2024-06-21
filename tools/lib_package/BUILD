@@ -14,6 +14,12 @@ alias(
     visibility = ["//visibility:public"],
 )
 
+alias(
+    name = "tensorflow_serving_proto",
+    actual = "//third_party/org_tensorflow:tensorflow_serving_proto",
+    visibility = ["//visibility:public"],
+)
+
 pkg_tar(
     name = "libtensorflow_go",
     strip_prefix = "/",
