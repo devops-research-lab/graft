@@ -1,0 +1,720 @@
+diff --git a/tensorflow/core/grappler/optimizers/inference/batch_op_rewriter.proto b/tensorflow/core/grappler/optimizers/inference/batch_op_rewriter.proto
+new file mode 100644
+index 0000000..10f67ed
+--- /dev/null
++++ b/tensorflow/core/grappler/optimizers/inference/batch_op_rewriter.proto
+@@ -0,0 +1,91 @@
++syntax = "proto3";
++
++package tensorflow.serving;
++
++import "google/protobuf/wrappers.proto";
++
++
++option go_package = "github.com/tensorflow/tensorflow/tensorflow/go/core/grappler/optimizers/inference_go_proto";
++
++// Config for the batch op rewriter. This should be serialized
++// and set a param in RewriterConfig with key kBatchOpRewriteParamKey.
++message BatchOpRewriteConfig {
++  bool enable_adaptive_shared_batching_thread_pool = 4;
++
++  // The options for tensorflow::serving::AdaptiveSharedBatchScheduler.
++  // See AdaptiveSharedBatchScheduler::Options for meaning of each field.
++  //
++  // NOTE:
++  // Leave this unset to pick up default settings which should work for most
++  // scenarios.
++  //
++  // Example scenarios when tuning helps:
++  // * Latency sensitive
++  message AdaptiveBatchSchedulerOption {
++    google.protobuf.UInt32Value min_inflight_batches_limit = 1;
++    google.protobuf.UInt32Value initial_inflight_batches_limit = 2;
++    google.protobuf.UInt32Value max_inflight_batches_limit = 3;
++
++    // You can use QPS as a reference to decide how quickly to react to workload
++    // changes.
++    google.protobuf.UInt32Value batches_to_average_over = 4;
++
++    // If set, specifies `full_batch_scheduling_boost_micros` of
++    // `AdaptiveSharedBatchScheduler::Options`. A full batch is scheduled
++    // before an older, nearly empty batch as long as the age gap is smaller
++    // than full_batch_scheduling_boost_micros. The optimal value for this
++    // parameter should be of order the batch processing latency, but must be
++    // chosen carefully, as too large a value will harm tail latency.
++    google.protobuf.Int64Value full_batch_scheduling_boost_micros = 5;
++  }
++  // DEPRECATED. Use the adaptive_batch_scheduler_option field in batch_options.
++  //
++  // Keyed by model name, meaning all batch-ops in one saved model would use the
++  // same adaptive-batch-scheduler option.
++  map<string /* model name */, AdaptiveBatchSchedulerOption>
++      model_scheduler_options = 1 [deprecated = true];
++
++  message BatchOptions {
++    // Number of scheduling threads for processing batches of work. Determines
++    // the number of batches processed in parallel.
++    //
++    // If enable_adaptive_shared_batching_thread_pool is enabled, this value
++    // can only be set to 0.
++    optional int32 num_batch_threads = 1;
++
++    // The maximum allowed batch size. Can be larger than allowed_batch_sizes to
++    // utilize large batch splitting.
++    optional int32 max_batch_size = 2;
++
++    // Maximum number of microseconds to wait before outputting an incomplete
++    // batch.
++    optional int32 batch_timeout_micros = 3;
++
++    // List of allowed batch sizes. The batching op will pad batches up to one
++    // of those sizes. The entries must increase monotonically, and the final
++    // entry must be lower or equal to max_batch_size.
++    repeated int32 allowed_batch_sizes = 4;
++
++    // Maximum number of batches enqueued for processing before requests are
++    // failed fast.
++    optional int32 max_enqueued_batches = 5;
++
++    // If set, disables large batch splitting which is an efficiency improvement
++    // on batching to reduce padding inefficiency.
++    optional bool disable_large_batch_splitting = 6;
++
++    // Adaptive batch scheduler options.
++    optional AdaptiveBatchSchedulerOption adaptive_batch_scheduler_option = 7;
++  }
++
++  // The options for overriding BatchFunction op in specific models.
++  //
++  // When these BatchOptions are set for a given model, they will override the
++  // models original batching options.
++  //
++  // This can be used to experiment with new batching options without updating
++  // the original saved model. This is NOT intended as a long term solution for
++  // updating batching options. Once the correct batching options have been
++  // identified using this, the saved model should be updated to include them.
++  map<string /* model name */, BatchOptions> batch_options = 2;
++}
+diff --git a/tensorflow/core/tfrt/graph_executor/config.proto b/tensorflow/core/tfrt/graph_executor/config.proto
+new file mode 100644
+index 0000000..f4bf717
+--- /dev/null
++++ b/tensorflow/core/tfrt/graph_executor/config.proto
+@@ -0,0 +1,13 @@
++syntax = "proto3";
++
++package tensorflow.tfrt_stub;
++
++import "google/protobuf/any.proto";
++
++option go_package = "github.com/tensorflow/tensorflow/tensorflow/go/core/tfrt/graph_executor_go_proto";
++
++// The serialization format for custom model configs. Though it is using
++// repeated Any protos, only one object of a proto type is allowed in the list.
++message RuntimeConfigProto {
++  repeated google.protobuf.Any config = 1;
++}
+diff --git a/tensorflow/serving/apis/classification.proto b/tensorflow/serving/apis/classification.proto
+index 4de0b7d..23b2ae0 100644
+--- a/tensorflow/serving/apis/classification.proto
++++ b/tensorflow/serving/apis/classification.proto
+@@ -2,11 +2,13 @@ syntax = "proto3";
+ 
+ package tensorflow.serving;
+ 
+-import "tensorflow_serving/apis/input.proto";
+-import "tensorflow_serving/apis/model.proto";
++import "tensorflow/serving/apis/input.proto";
++import "tensorflow/serving/apis/model.proto";
+ 
+ option cc_enable_arenas = true;
+ 
++option go_package = "github.com/tensorflow/tensorflow/tensorflow/go/serving/apis_go_proto";
++
+ // A single class.
+ message Class {
+   // Label or name of the class.
+diff --git a/tensorflow/serving/apis/get_model_metadata.proto b/tensorflow/serving/apis/get_model_metadata.proto
+index 5d765d8..c12e1aa 100644
+--- a/tensorflow/serving/apis/get_model_metadata.proto
++++ b/tensorflow/serving/apis/get_model_metadata.proto
+@@ -3,9 +3,12 @@ syntax = "proto3";
+ package tensorflow.serving;
+ option cc_enable_arenas = true;
+ 
++option go_package = "github.com/tensorflow/tensorflow/tensorflow/go/serving/apis_go_proto";
++
+ import "google/protobuf/any.proto";
+ import "tensorflow/core/protobuf/meta_graph.proto";
+-import "tensorflow_serving/apis/model.proto";
++import "tensorflow/serving/apis/model.proto";
++
+ 
+ // Message returned for "signature_def" field.
+ message SignatureDefMap {
+diff --git a/tensorflow/serving/apis/get_model_status.proto b/tensorflow/serving/apis/get_model_status.proto
+index 8881247..4b4200c 100644
+--- a/tensorflow/serving/apis/get_model_status.proto
++++ b/tensorflow/serving/apis/get_model_status.proto
+@@ -2,11 +2,13 @@ syntax = "proto3";
+ 
+ package tensorflow.serving;
+ 
+-import "tensorflow_serving/apis/model.proto";
+-import "tensorflow_serving/apis/status.proto";
++import "tensorflow/serving/apis/model.proto";
++import "tensorflow/serving/apis/status.proto";
+ 
+ option cc_enable_arenas = true;
+ 
++option go_package = "github.com/tensorflow/tensorflow/tensorflow/go/serving/apis_go_proto";
++
+ // GetModelStatusRequest contains a ModelSpec indicating the model for which
+ // to get status.
+ message GetModelStatusRequest {
+@@ -22,7 +24,7 @@ message ModelVersionStatus {
+   int64 version = 1;
+ 
+   // States that map to ManagerState enum in
+-  // tensorflow_serving/core/servable_state.h
++  // tensorflow/serving/core/servable_state.h
+   enum State {
+     // Default value.
+     UNKNOWN = 0;
+diff --git a/tensorflow/serving/apis/inference.proto b/tensorflow/serving/apis/inference.proto
+index 16e85ce..3daccca 100644
+--- a/tensorflow/serving/apis/inference.proto
++++ b/tensorflow/serving/apis/inference.proto
+@@ -12,10 +12,12 @@ syntax = "proto3";
+ 
+ option cc_enable_arenas = true;
+ 
+-import "tensorflow_serving/apis/classification.proto";
+-import "tensorflow_serving/apis/input.proto";
+-import "tensorflow_serving/apis/model.proto";
+-import "tensorflow_serving/apis/regression.proto";
++import "tensorflow/serving/apis/classification.proto";
++import "tensorflow/serving/apis/input.proto";
++import "tensorflow/serving/apis/model.proto";
++import "tensorflow/serving/apis/regression.proto";
++
++option go_package = "github.com/tensorflow/tensorflow/tensorflow/go/serving/apis_go_proto";
+ 
+ package tensorflow.serving;
+ 
+diff --git a/tensorflow/serving/apis/input.proto b/tensorflow/serving/apis/input.proto
+index e47ff43..28b0d4e 100644
+--- a/tensorflow/serving/apis/input.proto
++++ b/tensorflow/serving/apis/input.proto
+@@ -5,13 +5,15 @@ syntax = "proto3";
+ 
+ option cc_enable_arenas = true;
+ 
++option go_package = "github.com/tensorflow/tensorflow/tensorflow/go/serving/apis_go_proto";
++
+ import "tensorflow/core/example/example.proto";
+ 
+ package tensorflow.serving;
+ 
+ // Specifies one or more fully independent input Examples.
+ // See examples at:
+-//     https://github.com/tensorflow/tensorflow/blob/master/tensorflow/core/example/example.proto
++//     https://github.com/tensorflow/tensorflow/tensorflow/go/tensorflow/blob/master/tensorflow/core/example/example.proto
+ message ExampleList {
+   repeated tensorflow.Example examples = 1;
+ }
+diff --git a/tensorflow/serving/apis/internal/serialized_input.proto b/tensorflow/serving/apis/internal/serialized_input.proto
+index 862438e..db7657a 100644
+--- a/tensorflow/serving/apis/internal/serialized_input.proto
++++ b/tensorflow/serving/apis/internal/serialized_input.proto
+@@ -28,6 +28,8 @@ package tensorflow.serving.internal;
+ 
+ option cc_enable_arenas = true;
+ 
++option go_package = "github.com/tensorflow/tensorflow/tensorflow/go/serving/apis/internal_go_proto";
++
+ message SerializedExampleList {
+   repeated bytes examples = 1;
+ }
+diff --git a/tensorflow/serving/apis/logging.proto b/tensorflow/serving/apis/logging.proto
+index 0f9e876..cce7a42 100644
+--- a/tensorflow/serving/apis/logging.proto
++++ b/tensorflow/serving/apis/logging.proto
+@@ -2,11 +2,13 @@ syntax = "proto3";
+ 
+ package tensorflow.serving;
+ 
+-import "tensorflow_serving/apis/model.proto";
+-import "tensorflow_serving/config/logging_config.proto";
++import "tensorflow/serving/apis/model.proto";
++import "tensorflow/serving/config/logging_config.proto";
+ 
+ option cc_enable_arenas = true;
+ 
++option go_package = "github.com/tensorflow/tensorflow/tensorflow/go/serving/apis_go_proto";
++
+ // Metadata logged along with the request logs.
+ message LogMetadata {
+   ModelSpec model_spec = 1;
+diff --git a/tensorflow/serving/apis/model.proto b/tensorflow/serving/apis/model.proto
+index afd9590..460d9ec 100644
+--- a/tensorflow/serving/apis/model.proto
++++ b/tensorflow/serving/apis/model.proto
+@@ -6,6 +6,8 @@ import "google/protobuf/wrappers.proto";
+ 
+ option cc_enable_arenas = true;
+ 
++option go_package = "github.com/tensorflow/tensorflow/tensorflow/go/serving/apis_go_proto";
++
+ // Metadata for an inference request such as the model name and version.
+ message ModelSpec {
+   // Required servable name.
+diff --git a/tensorflow/serving/apis/model_management.proto b/tensorflow/serving/apis/model_management.proto
+index 2eba09b..e613af7 100644
+--- a/tensorflow/serving/apis/model_management.proto
++++ b/tensorflow/serving/apis/model_management.proto
+@@ -2,11 +2,13 @@ syntax = "proto3";
+ 
+ package tensorflow.serving;
+ 
+-import "tensorflow_serving/apis/status.proto";
+-import "tensorflow_serving/config/model_server_config.proto";
++import "tensorflow/serving/apis/status.proto";
++import "tensorflow/serving/config/model_server_config.proto";
+ 
+ option cc_enable_arenas = true;
+ 
++option go_package = "github.com/tensorflow/tensorflow/tensorflow/go/serving/apis_go_proto";
++
+ message ReloadConfigRequest {
+   ModelServerConfig config = 1;
+   repeated string metric_names = 2;
+diff --git a/tensorflow/serving/apis/model_service.proto b/tensorflow/serving/apis/model_service.proto
+index 29a3b07..e377956 100644
+--- a/tensorflow/serving/apis/model_service.proto
++++ b/tensorflow/serving/apis/model_service.proto
+@@ -2,8 +2,10 @@ syntax = "proto3";
+ 
+ option cc_enable_arenas = true;
+ 
+-import "tensorflow_serving/apis/get_model_status.proto";
+-import "tensorflow_serving/apis/model_management.proto";
++option go_package = "github.com/tensorflow/tensorflow/tensorflow/go/serving/apis_go_proto";
++
++import "tensorflow/serving/apis/get_model_status.proto";
++import "tensorflow/serving/apis/model_management.proto";
+ 
+ package tensorflow.serving;
+ 
+diff --git a/tensorflow/serving/apis/predict.proto b/tensorflow/serving/apis/predict.proto
+index 46823f4..61c717b 100644
+--- a/tensorflow/serving/apis/predict.proto
++++ b/tensorflow/serving/apis/predict.proto
+@@ -3,10 +3,12 @@ syntax = "proto3";
+ package tensorflow.serving;
+ 
+ import "tensorflow/core/framework/tensor.proto";
+-import "tensorflow_serving/apis/model.proto";
++import "tensorflow/serving/apis/model.proto";
+ 
+ option cc_enable_arenas = true;
+ 
++option go_package = "github.com/tensorflow/tensorflow/tensorflow/go/serving/apis_go_proto";
++
+ // PredictRequest specifies which TensorFlow model to run, as well as
+ // how inputs are mapped to tensors and how outputs are filtered before
+ // returning to user.
+diff --git a/tensorflow/serving/apis/prediction_log.proto b/tensorflow/serving/apis/prediction_log.proto
+index 9deebc7..50f0a26 100644
+--- a/tensorflow/serving/apis/prediction_log.proto
++++ b/tensorflow/serving/apis/prediction_log.proto
+@@ -2,15 +2,17 @@ syntax = "proto3";
+ 
+ package tensorflow.serving;
+ 
+-import "tensorflow_serving/apis/classification.proto";
+-import "tensorflow_serving/apis/inference.proto";
+-import "tensorflow_serving/apis/logging.proto";
+-import "tensorflow_serving/apis/predict.proto";
+-import "tensorflow_serving/apis/regression.proto";
+-import "tensorflow_serving/apis/session_service.proto";
++import "tensorflow/serving/apis/classification.proto";
++import "tensorflow/serving/apis/inference.proto";
++import "tensorflow/serving/apis/logging.proto";
++import "tensorflow/serving/apis/predict.proto";
++import "tensorflow/serving/apis/regression.proto";
++import "tensorflow/serving/apis/session_service.proto";
+ 
+ option cc_enable_arenas = true;
+ 
++option go_package = "github.com/tensorflow/tensorflow/tensorflow/go/serving/apis_go_proto";
++
+ message ClassifyLog {
+   ClassificationRequest request = 1;
+   ClassificationResponse response = 2;
+diff --git a/tensorflow/serving/apis/prediction_service.proto b/tensorflow/serving/apis/prediction_service.proto
+index 44e6554..b4734fc 100644
+--- a/tensorflow/serving/apis/prediction_service.proto
++++ b/tensorflow/serving/apis/prediction_service.proto
+@@ -3,11 +3,13 @@ syntax = "proto3";
+ package tensorflow.serving;
+ option cc_enable_arenas = true;
+ 
+-import "tensorflow_serving/apis/classification.proto";
+-import "tensorflow_serving/apis/get_model_metadata.proto";
+-import "tensorflow_serving/apis/inference.proto";
+-import "tensorflow_serving/apis/predict.proto";
+-import "tensorflow_serving/apis/regression.proto";
++option go_package = "github.com/tensorflow/tensorflow/tensorflow/go/serving/apis_go_proto";
++
++import "tensorflow/serving/apis/classification.proto";
++import "tensorflow/serving/apis/get_model_metadata.proto";
++import "tensorflow/serving/apis/inference.proto";
++import "tensorflow/serving/apis/predict.proto";
++import "tensorflow/serving/apis/regression.proto";
+ 
+ // open source marker; do not remove
+ // PredictionService provides access to machine-learned models loaded by
+diff --git a/tensorflow/serving/apis/regression.proto b/tensorflow/serving/apis/regression.proto
+index 5fb79ba..3f4f6cb 100644
+--- a/tensorflow/serving/apis/regression.proto
++++ b/tensorflow/serving/apis/regression.proto
+@@ -2,11 +2,13 @@ syntax = "proto3";
+ 
+ package tensorflow.serving;
+ 
+-import "tensorflow_serving/apis/input.proto";
+-import "tensorflow_serving/apis/model.proto";
++import "tensorflow/serving/apis/input.proto";
++import "tensorflow/serving/apis/model.proto";
+ 
+ option cc_enable_arenas = true;
+ 
++option go_package = "github.com/tensorflow/tensorflow/tensorflow/go/serving/apis_go_proto";
++
+ // Regression result for a single item (tensorflow.Example).
+ message Regression {
+   float value = 1;
+diff --git a/tensorflow/serving/apis/session_service.proto b/tensorflow/serving/apis/session_service.proto
+index cf53c54..77fbd4e 100644
+--- a/tensorflow/serving/apis/session_service.proto
++++ b/tensorflow/serving/apis/session_service.proto
+@@ -4,10 +4,12 @@ package tensorflow.serving;
+ 
+ import "tensorflow/core/protobuf/config.proto";
+ import "tensorflow/core/protobuf/named_tensor.proto";
+-import "tensorflow_serving/apis/model.proto";
++import "tensorflow/serving/apis/model.proto";
+ 
+ option cc_enable_arenas = true;
+ 
++option go_package = "github.com/tensorflow/tensorflow/tensorflow/go/serving/apis_go_proto";
++
+ message SessionRunRequest {
+   // Model Specification. If version is not specified, will use the latest
+   // (numerical) version.
+diff --git a/tensorflow/serving/apis/status.proto b/tensorflow/serving/apis/status.proto
+index 332d1b7..d729dd6 100644
+--- a/tensorflow/serving/apis/status.proto
++++ b/tensorflow/serving/apis/status.proto
+@@ -6,6 +6,8 @@ import "tensorflow/core/protobuf/error_codes.proto";
+ 
+ option cc_enable_arenas = true;
+ 
++option go_package = "github.com/tensorflow/tensorflow/tensorflow/go/serving/apis_go_proto";
++
+ // Status that corresponds to Status in
+ // third_party/tensorflow/core/lib/core/status.h.
+ message StatusProto {
+diff --git a/tensorflow/serving/config/file_system_storage_path_source.proto b/tensorflow/serving/config/file_system_storage_path_source.proto
+index 6924fe4..0a658a0 100644
+--- a/tensorflow/serving/config/file_system_storage_path_source.proto
++++ b/tensorflow/serving/config/file_system_storage_path_source.proto
+@@ -2,6 +2,8 @@ syntax = "proto3";
+ 
+ package tensorflow.serving;
+ 
++option go_package = "github.com/tensorflow/tensorflow/tensorflow/go/serving/config_go_proto";
++
+ // Config proto for FileSystemStoragePathSource.
+ message FileSystemStoragePathSourceConfig {
+   // A policy that dictates which version(s) of a servable should be served.
+diff --git a/tensorflow/serving/config/log_collector_config.proto b/tensorflow/serving/config/log_collector_config.proto
+index 4ce01d3..e513f3b 100644
+--- a/tensorflow/serving/config/log_collector_config.proto
++++ b/tensorflow/serving/config/log_collector_config.proto
+@@ -3,6 +3,8 @@ syntax = "proto3";
+ package tensorflow.serving;
+ option cc_enable_arenas = true;
+ 
++option go_package = "github.com/tensorflow/tensorflow/tensorflow/go/serving/config_go_proto";
++
+ message LogCollectorConfig {
+   // Identifies the type of the LogCollector we will use to collect these logs.
+   string type = 1;
+diff --git a/tensorflow/serving/config/logging_config.proto b/tensorflow/serving/config/logging_config.proto
+index 31fbe94..5171d63 100644
+--- a/tensorflow/serving/config/logging_config.proto
++++ b/tensorflow/serving/config/logging_config.proto
+@@ -2,10 +2,12 @@ syntax = "proto3";
+ 
+ package tensorflow.serving;
+ 
+-import "tensorflow_serving/config/log_collector_config.proto";
++import "tensorflow/serving/config/log_collector_config.proto";
+ 
+ option cc_enable_arenas = true;
+ 
++option go_package = "github.com/tensorflow/tensorflow/tensorflow/go/serving/config_go_proto";
++
+ message SamplingConfig {
+   // Requests will be logged uniformly at random with this probability.
+   // Valid range: [0, 1.0].
+diff --git a/tensorflow/serving/config/model_server_config.proto b/tensorflow/serving/config/model_server_config.proto
+index cadc2b6..b1bc2b8 100644
+--- a/tensorflow/serving/config/model_server_config.proto
++++ b/tensorflow/serving/config/model_server_config.proto
+@@ -3,11 +3,13 @@ syntax = "proto3";
+ package tensorflow.serving;
+ 
+ import "google/protobuf/any.proto";
+-import "tensorflow_serving/config/file_system_storage_path_source.proto";
+-import "tensorflow_serving/config/logging_config.proto";
++import "tensorflow/serving/config/file_system_storage_path_source.proto";
++import "tensorflow/serving/config/logging_config.proto";
+ 
+ option cc_enable_arenas = true;
+ 
++option go_package = "github.com/tensorflow/tensorflow/tensorflow/go/serving/config_go_proto";
++
+ // The type of model.
+ // TODO(b/31336131): DEPRECATED.
+ enum ModelType {
+diff --git a/tensorflow/serving/config/monitoring_config.proto b/tensorflow/serving/config/monitoring_config.proto
+index 9da3700..7e35767 100644
+--- a/tensorflow/serving/config/monitoring_config.proto
++++ b/tensorflow/serving/config/monitoring_config.proto
+@@ -3,6 +3,8 @@ syntax = "proto3";
+ package tensorflow.serving;
+ option cc_enable_arenas = true;
+ 
++option go_package = "github.com/tensorflow/tensorflow/tensorflow/go/serving/config_go_proto";
++
+ // Configuration for Prometheus monitoring.
+ message PrometheusConfig {
+   // Whether to expose Prometheus metrics.
+diff --git a/tensorflow/serving/config/platform_config.proto b/tensorflow/serving/config/platform_config.proto
+index 4e506b3..cd711a9 100644
+--- a/tensorflow/serving/config/platform_config.proto
++++ b/tensorflow/serving/config/platform_config.proto
+@@ -3,6 +3,8 @@ syntax = "proto3";
+ package tensorflow.serving;
+ option cc_enable_arenas = true;
+ 
++option go_package = "github.com/tensorflow/tensorflow/tensorflow/go/serving/config_go_proto";
++
+ import "google/protobuf/any.proto";
+ 
+ // Configuration for a servable platform e.g. tensorflow or other ML systems.
+diff --git a/tensorflow/serving/config/ssl_config.proto b/tensorflow/serving/config/ssl_config.proto
+index 0e51cd6..2aebd06 100644
+--- a/tensorflow/serving/config/ssl_config.proto
++++ b/tensorflow/serving/config/ssl_config.proto
+@@ -3,6 +3,8 @@ syntax = "proto3";
+ package tensorflow.serving;
+ option cc_enable_arenas = true;
+ 
++option go_package = "github.com/tensorflow/tensorflow/tensorflow/go/serving/config_go_proto";
++
+ // Configuration for a secure gRPC channel
+ message SSLConfig {
+   // private server key for SSL
+diff --git a/tensorflow/serving/core/test_util/fake_loader_source_adapter.proto b/tensorflow/serving/core/test_util/fake_loader_source_adapter.proto
+index d3d4adb..3aa07cd 100644
+--- a/tensorflow/serving/core/test_util/fake_loader_source_adapter.proto
++++ b/tensorflow/serving/core/test_util/fake_loader_source_adapter.proto
+@@ -2,6 +2,8 @@ syntax = "proto3";
+ 
+ package tensorflow.serving.test_util;
+ 
++option go_package = "github.com/tensorflow/tensorflow/tensorflow/go/serving/core/test_util_go_proto";
++
+ // Config proto for FakeLoaderSourceAdapter.
+ message FakeLoaderSourceAdapterConfig {
+   // FakeLoaderSourceAdapter's 'suffix' ctor parameter.
+diff --git a/tensorflow/serving/model_servers/test_util/storage_path_error_injecting_source_adapter.proto b/tensorflow/serving/model_servers/test_util/storage_path_error_injecting_source_adapter.proto
+index 39fd84f..ab6b23a 100644
+--- a/tensorflow/serving/model_servers/test_util/storage_path_error_injecting_source_adapter.proto
++++ b/tensorflow/serving/model_servers/test_util/storage_path_error_injecting_source_adapter.proto
+@@ -2,6 +2,8 @@ syntax = "proto3";
+ 
+ package tensorflow.serving.test_util;
+ 
++option go_package = "github.com/tensorflow/tensorflow/tensorflow/go/serving/model_servers/test_util_go_proto";
++
+ // Config proto for StoragePathErrorInjectingSourceAdapter.
+ message StoragePathErrorInjectingSourceAdapterConfig {
+   // The error message the adapter emits.
+diff --git a/tensorflow/serving/resources/resources.proto b/tensorflow/serving/resources/resources.proto
+index 125bee6..bd6ccc8 100644
+--- a/tensorflow/serving/resources/resources.proto
++++ b/tensorflow/serving/resources/resources.proto
+@@ -8,6 +8,8 @@ syntax = "proto3";
+ 
+ import "google/protobuf/wrappers.proto";
+ 
++option go_package = "github.com/tensorflow/tensorflow/tensorflow/go/serving/resources_go_proto";
++
+ package tensorflow.serving;
+ 
+ // One kind of resource on one device (or type of device).
+diff --git a/tensorflow/serving/servables/hashmap/hashmap_source_adapter.proto b/tensorflow/serving/servables/hashmap/hashmap_source_adapter.proto
+index 33e956e..5fed89a 100644
+--- a/tensorflow/serving/servables/hashmap/hashmap_source_adapter.proto
++++ b/tensorflow/serving/servables/hashmap/hashmap_source_adapter.proto
+@@ -2,6 +2,8 @@ syntax = "proto3";
+ 
+ package tensorflow.serving;
+ 
++option go_package = "github.com/tensorflow/tensorflow/tensorflow/go/serving/servables/hashmap_go_proto";
++
+ // Config proto for HashmapSourceAdapter.
+ message HashmapSourceAdapterConfig {
+   // The format used by the file containing a serialized hashmap.
+diff --git a/tensorflow/serving/servables/tensorflow/remote_op_config_rewriter.proto b/tensorflow/serving/servables/tensorflow/remote_op_config_rewriter.proto
+index 72a0d24..362270d 100644
+--- a/tensorflow/serving/servables/tensorflow/remote_op_config_rewriter.proto
++++ b/tensorflow/serving/servables/tensorflow/remote_op_config_rewriter.proto
+@@ -2,6 +2,8 @@ syntax = "proto3";
+ 
+ package tensorflow.serving.tools;
+ 
++option go_package = "github.com/tensorflow/tensorflow/tensorflow/go/serving/servables/tensorflow_go_proto";
++
+ // Config for the remote op rewriter. This should be serialized/encoded
+ // and set a param in RewriterConfig with key kRemoteOpRewriteConfigParamKey.
+ message RemoteOpRemapConfig {
+diff --git a/tensorflow/serving/servables/tensorflow/saved_model_bundle_source_adapter.proto b/tensorflow/serving/servables/tensorflow/saved_model_bundle_source_adapter.proto
+index 56cbe7c..bd436d6 100644
+--- a/tensorflow/serving/servables/tensorflow/saved_model_bundle_source_adapter.proto
++++ b/tensorflow/serving/servables/tensorflow/saved_model_bundle_source_adapter.proto
+@@ -1,6 +1,8 @@
+ syntax = "proto3";
+ 
+-import "tensorflow_serving/servables/tensorflow/session_bundle_config.proto";
++import "tensorflow/serving/servables/tensorflow/session_bundle_config.proto";
++
++option go_package = "github.com/tensorflow/tensorflow/tensorflow/go/serving/servables/tensorflow_go_proto";
+ 
+ package tensorflow.serving;
+ 
+diff --git a/tensorflow/serving/servables/tensorflow/saved_model_config.proto b/tensorflow/serving/servables/tensorflow/saved_model_config.proto
+index 641f9f2..2ccff2e 100644
+--- a/tensorflow/serving/servables/tensorflow/saved_model_config.proto
++++ b/tensorflow/serving/servables/tensorflow/saved_model_config.proto
+@@ -4,10 +4,12 @@ package tensorflow.serving;
+ 
+ import "tensorflow/core/grappler/optimizers/inference/batch_op_rewriter.proto";
+ import "tensorflow/core/tfrt/graph_executor/config.proto";
+-import "tensorflow_serving/servables/tensorflow/remote_op_config_rewriter.proto";
++import "tensorflow/serving/servables/tensorflow/remote_op_config_rewriter.proto";
+ 
+ option cc_enable_arenas = true;
+ 
++option go_package = "github.com/tensorflow/tensorflow/tensorflow/go/serving/servables/tensorflow_go_proto";
++
+ message SessionOverrides {
+   optional tools.RemoteOpRemapConfig remote_op_remap_config = 1;
+   optional BatchOpRewriteConfig batch_op_rewriter_config = 2;
+diff --git a/tensorflow/serving/servables/tensorflow/session_bundle_config.proto b/tensorflow/serving/servables/tensorflow/session_bundle_config.proto
+index f4e79c2..772d278 100644
+--- a/tensorflow/serving/servables/tensorflow/session_bundle_config.proto
++++ b/tensorflow/serving/servables/tensorflow/session_bundle_config.proto
+@@ -6,6 +6,8 @@ import "google/protobuf/wrappers.proto";
+ import "tensorflow/core/protobuf/config.proto";
+ import "tensorflow/core/protobuf/named_tensor.proto";
+ 
++option go_package = "github.com/tensorflow/tensorflow/tensorflow/go/serving/servables/tensorflow_go_proto";
++
+ // Options related to model-warmup.
+ message ModelWarmupOptions {
+   // Number of times a request is iterated during warmup replay. By default 1.
+diff --git a/tensorflow/serving/servables/tensorflow/test_util/fake_thread_pool_factory.proto b/tensorflow/serving/servables/tensorflow/test_util/fake_thread_pool_factory.proto
+index a75c977..3923297 100644
+--- a/tensorflow/serving/servables/tensorflow/test_util/fake_thread_pool_factory.proto
++++ b/tensorflow/serving/servables/tensorflow/test_util/fake_thread_pool_factory.proto
+@@ -17,5 +17,7 @@ syntax = "proto3";
+ 
+ package tensorflow.serving.test_util;
+ 
++option go_package = "github.com/tensorflow/tensorflow/tensorflow/go/serving/servables/tensorflow/test_util_go_proto";
++
+ // Config proto for FakeThreadPoolFactory.
+ message FakeThreadPoolFactoryConfig {}
+diff --git a/tensorflow/serving/servables/tensorflow/tfrt_saved_model_source_adapter.proto b/tensorflow/serving/servables/tensorflow/tfrt_saved_model_source_adapter.proto
+index 27b536a..04b297c 100644
+--- a/tensorflow/serving/servables/tensorflow/tfrt_saved_model_source_adapter.proto
++++ b/tensorflow/serving/servables/tensorflow/tfrt_saved_model_source_adapter.proto
+@@ -3,7 +3,9 @@ syntax = "proto3";
+ package tensorflow.serving;
+ 
+ import "tensorflow/core/protobuf/config.proto";
+-import "tensorflow_serving/servables/tensorflow/session_bundle_config.proto";
++import "tensorflow/serving/servables/tensorflow/session_bundle_config.proto";
++
++option go_package = "github.com/tensorflow/tensorflow/tensorflow/go/serving/servables/tensorflow_go_proto";
+ 
+ message TfrtSavedModelConfig {
+   reserved 1019, 1031;
+diff --git a/tensorflow/serving/servables/tensorflow/thread_pool_factory_config.proto b/tensorflow/serving/servables/tensorflow/thread_pool_factory_config.proto
+index a7c2f2d..c376513 100644
+--- a/tensorflow/serving/servables/tensorflow/thread_pool_factory_config.proto
++++ b/tensorflow/serving/servables/tensorflow/thread_pool_factory_config.proto
+@@ -21,6 +21,8 @@ import "google/protobuf/any.proto";
+ 
+ option cc_enable_arenas = true;
+ 
++option go_package = "github.com/tensorflow/tensorflow/tensorflow/go/serving/servables/tensorflow_go_proto";
++
+ // Configuration for a thread pool factory.
+ message ThreadPoolFactoryConfig {
+   // The config proto for a ThreadPoolFactory in the ThreadPoolFactory registry.
+diff --git a/tensorflow/serving/session_bundle/oss/manifest.proto b/tensorflow/serving/session_bundle/oss/manifest.proto
+index 79bbd98..e0f666f 100644
+--- a/tensorflow/serving/session_bundle/oss/manifest.proto
++++ b/tensorflow/serving/session_bundle/oss/manifest.proto
+@@ -2,6 +2,8 @@ syntax = "proto3";
+ 
+ package tensorflow.serving;
+ 
++option go_package = "github.com/tensorflow/tensorflow/tensorflow/go/serving/session_bundle/oss_go_proto";
++
+ // Signatures of model export.
+ message Signatures {
+   // Default signature of the graph.
+diff --git a/tensorflow/serving/sources/storage_path/static_storage_path_source.proto b/tensorflow/serving/sources/storage_path/static_storage_path_source.proto
+index a7bca94..cf3dfe5 100644
+--- a/tensorflow/serving/sources/storage_path/static_storage_path_source.proto
++++ b/tensorflow/serving/sources/storage_path/static_storage_path_source.proto
+@@ -2,6 +2,8 @@ syntax = "proto3";
+ 
+ package tensorflow.serving;
+ 
++option go_package = "github.com/tensorflow/tensorflow/tensorflow/go/serving/sources/storage_path_go_proto";
++
+ // Config proto for StaticStoragePathSource.
+ message StaticStoragePathSourceConfig {
+   // The single servable name, version number and path to supply statically.
+diff --git a/tensorflow/serving/util/class_registration_test.proto b/tensorflow/serving/util/class_registration_test.proto
+index ff54210..ccafc1a 100644
+--- a/tensorflow/serving/util/class_registration_test.proto
++++ b/tensorflow/serving/util/class_registration_test.proto
+@@ -4,6 +4,8 @@ syntax = "proto3";
+ 
+ import "google/protobuf/any.proto";
+ 
++option go_package = "github.com/tensorflow/tensorflow/tensorflow/go/serving/util_go_proto";
++
+ package tensorflow.serving;
+ 
+ message Config1 {

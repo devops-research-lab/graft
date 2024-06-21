@@ -28,6 +28,16 @@ pkg_tar(
 )
 
 pkg_tar(
+    name = "tensorflow_serving_proto",
+    srcs = ["@tensorflow_serving_proto//:protos_all_proto_srcs"],
+    remap_paths = {
+        "external/_main~download_tf_repositories~tensorflow_serving_proto": "",
+    },
+    strip_prefix = "/external/tensorflow_serving_proto",
+    visibility = ["//:__subpackages__"],
+)
+
+pkg_tar(
     name = "libtensorflow_pkg",
     srcs = select({
         "//tools/conditions:linux_x86_64_cpu": ["@libtensorflow_linux_x86_64_cpu//:pkg_files"],

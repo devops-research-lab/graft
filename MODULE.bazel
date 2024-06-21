@@ -42,6 +42,7 @@ use_repo(
     "libtensorflow_proto",
     "tensorflow_base_api_def",
     "tensorflow_go",
+    "tensorflow_serving_proto",
 )
 
 libtensorflow_defaults = use_repo_rule(
