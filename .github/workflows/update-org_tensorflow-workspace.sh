@@ -99,6 +99,15 @@ http_archive "libtensorflow_proto" \
     "libtensorflow-proto-${TF_VERSION}" \
     "https://github.com/wamuir/libtensorflow-proto/archive/refs/tags/v${TF_VERSION}.tar.gz"
 
+http_archive "tensorflow_serving_proto" \
+    "@graft//third_party/org_tensorflow/tensorflow_serving_proto:tensorflow_serving_proto.BUILD" \
+    "-p1" \
+    "[
+            \"@graft//third_party/org_tensorflow/tensorflow_serving_proto:tensorflow_serving_proto.patch\",
+        ]" \
+    "tensorflow-serving-proto-${TF_VERSION}" \
+    "https://github.com/wamuir/tensorflow-serving-proto/archive/refs/tags/v${TF_VERSION}.tar.gz"
+
 cat <<EOF >> "${WORKSPACE}"
 
     ###########################################################################
