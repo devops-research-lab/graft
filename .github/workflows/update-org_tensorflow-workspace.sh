@@ -62,13 +62,6 @@ http_archive "libtensorflow_linux_x86_64_gpu" \
     "" \
     "https://storage.googleapis.com/tensorflow/versions/${TF_VERSION}/libtensorflow-gpu-linux-x86_64.tar.gz"
 
-http_archive "libtensorflow_macos_x86_64_cpu" \
-    "@graft//third_party/org_tensorflow/libtensorflow:libtensorflow.BUILD" \
-    "-p1" \
-    "[]" \
-    "" \
-    "https://storage.googleapis.com/tensorflow/versions/${TF_VERSION}/libtensorflow-cpu-darwin-x86_64.tar.gz"
-
 http_archive "libtensorflow_macos_arm_64_cpu" \
     "@graft//third_party/org_tensorflow/libtensorflow:libtensorflow.BUILD" \
     "-p1" \

@@ -10,7 +10,6 @@ alias(
     actual = select({
         "//tools/conditions:linux_x86_64_cpu": "@libtensorflow_linux_x86_64_cpu//:libtensorflow",
         "//tools/conditions:linux_x86_64_gpu": "@libtensorflow_linux_x86_64_gpu//:libtensorflow",
-        "//tools/conditions:macos_x86_64_cpu": "@libtensorflow_macos_x86_64_cpu//:libtensorflow",
         "//tools/conditions:macos_arm_64_cpu": "@libtensorflow_macos_arm_64_cpu//:libtensorflow",
         "//conditions:default": "@libtensorflow_other_build//:libtensorflow",
     }),
@@ -42,21 +41,18 @@ pkg_tar(
     srcs = select({
         "//tools/conditions:linux_x86_64_cpu": ["@libtensorflow_linux_x86_64_cpu//:pkg_files"],
         "//tools/conditions:linux_x86_64_gpu": ["@libtensorflow_linux_x86_64_gpu//:pkg_files"],
-        "//tools/conditions:macos_x86_64_cpu": ["@libtensorflow_macos_x86_64_cpu//:pkg_files"],
         "//tools/conditions:macos_arm_64_cpu": ["@libtensorflow_macos_arm_64_cpu//:pkg_files"],
         "//conditions:default": ["@libtensorflow_other_build//:pkg_files"],
     }),
     remap_paths = {
         "external/_main~download_tf_repositories~libtensorflow_linux_x86_64_cpu": "",
         "external/_main~download_tf_repositories~libtensorflow_linux_x86_64_gpu": "",
-        "external/_main~download_tf_repositories~libtensorflow_macos_x86_64_cpu": "",
         "external/_main~download_tf_repositories~libtensorflow_macos_arm_64_cpu": "",
         "external/_main~download_tf_repositories~libtensorflow_other_build": "",
     },
     strip_prefix = select({
         "//tools/conditions:linux_x86_64_cpu": "/external/libtensorflow_linux_x86_64_cpu",
         "//tools/conditions:linux_x86_64_gpu": "/external/libtensorflow_linux_x86_64_gpu",
-        "//tools/conditions:macos_x86_64_cpu": "/external/libtensorflow_macos_x86_64_cpu",
         "//tools/conditions:macos_arm_64_cpu": "/external/libtensorflow_macos_arm_64_cpu",
         "//conditions:default": "/external/libtensorflow_other_build",
     }),
