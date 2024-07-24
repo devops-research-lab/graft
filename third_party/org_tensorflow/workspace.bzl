@@ -20,13 +20,6 @@ def tf_repositories(ctx):
     )
 
     http_embedded_archive(
-        name = "libtensorflow_macos_x86_64_cpu",
-        build_file = "@graft//third_party/org_tensorflow/libtensorflow:libtensorflow.BUILD",
-        urls = ["https://storage.googleapis.com/libtensorflow-nightly/prod/tensorflow/release/macos/latest/macos_cpu_libtensorflow_binaries.tar.gz"],
-        inner_archive = "lib_package/libtensorflow-cpu-darwin-x86_64.tar.gz",
-    )
-
-    http_embedded_archive(
         name = "libtensorflow_macos_arm_64_cpu",
         build_file = "@graft//third_party/org_tensorflow/libtensorflow:libtensorflow.BUILD",
         urls = ["https://storage.googleapis.com/libtensorflow-nightly/prod/tensorflow/release/macos/latest/macos_cpu_libtensorflow_binaries.tar.gz"],
