@@ -6,6 +6,7 @@ pkg_tar(
     name = "libtensorflow_graft",
     strip_prefix = "/",
     visibility = ["//visibility:public"],
+    allow_duplicates_from_deps = True,
     deps = [
         ":go_bindings",
         "//tools/lib_package:libtensorflow",

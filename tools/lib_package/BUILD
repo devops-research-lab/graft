@@ -24,6 +24,7 @@ pkg_tar(
     name = "libtensorflow_go",
     strip_prefix = "/",
     visibility = ["//visibility:public"],
+    allow_duplicates_from_deps = True,
     deps = [
         ":libtensorflow",
         "//third_party/org_tensorflow:go_bindings",
