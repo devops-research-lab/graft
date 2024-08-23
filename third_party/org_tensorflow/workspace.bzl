@@ -43,6 +43,7 @@ def tf_repositories(ctx):
         patches = [
             "@graft//third_party/org_tensorflow/libtensorflow_proto:libtensorflow_proto.patch",
             "@graft//third_party/org_tensorflow/libtensorflow_proto:libtensorflow_proto_tsl.patch",
+            "@graft//third_party/org_tensorflow/libtensorflow_proto:libtensorflow_proto_xla.patch",
         ],
         strip_prefix = "libtensorflow-proto-nightly",
         urls = ["https://github.com/wamuir/libtensorflow-proto/archive/refs/heads/nightly.tar.gz"],

@@ -1,13 +1,16 @@
-diff --git a/external/local_xla/xla/tsl/protobuf/bfc_memory_map.proto b/external/local_xla/xla/tsl/protobuf/bfc_memory_map.proto
-index bca45cb..e5d482f 100644
+diff --git a/external/local_xla/xla/tsl/protobuf/bfc_memory_map.proto b/xla/tsl/protobuf/bfc_memory_map.proto
+similarity index 89%
+rename from external/local_xla/xla/tsl/protobuf/bfc_memory_map.proto
+rename to xla/tsl/protobuf/bfc_memory_map.proto
+index bca45cb..b1a9e65 100644
 --- a/external/local_xla/xla/tsl/protobuf/bfc_memory_map.proto
-+++ b/external/local_xla/xla/tsl/protobuf/bfc_memory_map.proto
++++ b/xla/tsl/protobuf/bfc_memory_map.proto
 @@ -2,7 +2,7 @@ syntax = "proto3";
  
  package tensorflow;
  
 -option go_package = "github.com/google/tsl/tsl/go/protobuf/for_core_protos_go_proto";
-+option go_package = "github.com/tensorflow/tensorflow/tensorflow/go/tsl/protobuf/for_core_protos_go_proto";
++option go_package = "github.com/tensorflow/tensorflow/tensorflow/go/xla/tsl/protobuf/for_core_protos_go_proto";
  
  // Some of the data from AllocatorStats
  message MemAllocatorStats {
