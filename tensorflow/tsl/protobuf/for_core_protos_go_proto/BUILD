@@ -3,7 +3,6 @@ load("@rules_go//go:def.bzl", "go_library")
 go_library(
     name = "for_core_protos_go_proto",
     srcs = [
-        "bfc_memory_map.pb.go",
         "distributed_runtime_payloads.pb.go",
         "error_codes.pb.go",
         "histogram.pb.go",
