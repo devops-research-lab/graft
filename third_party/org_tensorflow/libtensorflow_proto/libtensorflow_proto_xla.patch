@@ -15,6 +15,9 @@ index bca45cb..b1a9e65 100644
  // Some of the data from AllocatorStats
  message MemAllocatorStats {
 diff --git a/external/local_xla/xla/tsl/protobuf/test_log.proto b/xla/tsl/protobuf/test_log.proto
+similarity index 98%
+rename from external/local_xla/xla/tsl/protobuf/test_log.proto
+rename to xla/tsl/protobuf/test_log.proto
 index 6d3af02..323b1bb 100644
 --- a/external/local_xla/xla/tsl/protobuf/test_log.proto
 +++ b/xla/tsl/protobuf/test_log.proto
