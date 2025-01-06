@@ -2,7 +2,7 @@ diff --git a/external/local_xla/xla/tsl/protobuf/bfc_memory_map.proto b/xla/tsl/
 similarity index 89%
 rename from external/local_xla/xla/tsl/protobuf/bfc_memory_map.proto
 rename to xla/tsl/protobuf/bfc_memory_map.proto
-index bca45cb..b1a9e65 100644
+index bca45cb..b1a9e65 100755
 --- a/external/local_xla/xla/tsl/protobuf/bfc_memory_map.proto
 +++ b/xla/tsl/protobuf/bfc_memory_map.proto
 @@ -2,7 +2,7 @@ syntax = "proto3";
@@ -14,18 +14,114 @@ index bca45cb..b1a9e65 100644
  
  // Some of the data from AllocatorStats
  message MemAllocatorStats {
+diff --git a/external/local_xla/xla/tsl/protobuf/coordination_config.proto b/xla/tsl/protobuf/coordination_config.proto
+similarity index 98%
+rename from external/local_xla/xla/tsl/protobuf/coordination_config.proto
+rename to xla/tsl/protobuf/coordination_config.proto
+index 645c992..bc71561 100755
+--- a/external/local_xla/xla/tsl/protobuf/coordination_config.proto
++++ b/xla/tsl/protobuf/coordination_config.proto
+@@ -2,7 +2,7 @@ syntax = "proto3";
+ 
+ package tensorflow;
+ 
+-option go_package = "github.com/tensorflow/tensorflow/tensorflow/go/core/protobuf/for_core_protos_go_proto";
++option go_package = "github.com/tensorflow/tensorflow/tensorflow/go/xla/tsl/protobuf/for_core_protos_go_proto";
+ 
+ // Represents a job type and the number of tasks under this job.
+ // For example, ("worker", 20) implies that there will be 20 worker tasks.
+diff --git a/external/local_xla/xla/tsl/protobuf/distributed_runtime_payloads.proto b/xla/tsl/protobuf/distributed_runtime_payloads.proto
+similarity index 87%
+rename from external/local_xla/xla/tsl/protobuf/distributed_runtime_payloads.proto
+rename to xla/tsl/protobuf/distributed_runtime_payloads.proto
+index 3a2aecd..7adefe5 100755
+--- a/external/local_xla/xla/tsl/protobuf/distributed_runtime_payloads.proto
++++ b/xla/tsl/protobuf/distributed_runtime_payloads.proto
+@@ -3,7 +3,7 @@ syntax = "proto3";
+ package tensorflow.distributed_runtime;
+ 
+ option cc_enable_arenas = true;
+-option go_package = "github.com/tsl/tsl/go/core/protobuf/for_core_protos_go_proto";
++option go_package = "github.com/tensorflow/tensorflow/tensorflow/go/xla/tsl/protobuf/for_core_protos_go_proto";
+ 
+ // Used to serialize and transmit tensorflow::Status payloads through
+ // grpc::Status `error_details` since grpc::Status lacks payload API.
+diff --git a/external/local_xla/xla/tsl/protobuf/error_codes.proto b/xla/tsl/protobuf/error_codes.proto
+similarity index 98%
+rename from external/local_xla/xla/tsl/protobuf/error_codes.proto
+rename to xla/tsl/protobuf/error_codes.proto
+index f1f7ee0..1eafe2a 100755
+--- a/external/local_xla/xla/tsl/protobuf/error_codes.proto
++++ b/xla/tsl/protobuf/error_codes.proto
+@@ -6,7 +6,7 @@ option cc_enable_arenas = true;
+ option java_outer_classname = "ErrorCodesProtos";
+ option java_multiple_files = true;
+ option java_package = "org.tensorflow.framework";
+-option go_package = "github.com/google/tsl/tsl/go/protobuf/for_core_protos_go_proto";
++option go_package = "github.com/tensorflow/tensorflow/tensorflow/go/xla/tsl/protobuf/for_core_protos_go_proto";
+ 
+ // The canonical error codes for TensorFlow APIs.
+ //
+diff --git a/external/local_xla/xla/tsl/protobuf/histogram.proto b/xla/tsl/protobuf/histogram.proto
+similarity index 86%
+rename from external/local_xla/xla/tsl/protobuf/histogram.proto
+rename to xla/tsl/protobuf/histogram.proto
+index 2a5f6d9..fad9929 100755
+--- a/external/local_xla/xla/tsl/protobuf/histogram.proto
++++ b/xla/tsl/protobuf/histogram.proto
+@@ -5,7 +5,7 @@ package tensorflow;
+ option cc_enable_arenas = true;
+ option java_multiple_files = true;
+ option java_package = "org.tensorflow.framework";
+-option go_package = "github.com/google/tsl/tsl/go/core/protobuf/summary_go_proto";
++option go_package = "github.com/tensorflow/tensorflow/tensorflow/go/xla/tsl/protobuf/for_core_protos_go_proto";
+ 
+ // Serialization format for histogram module in
+ // tsl/lib/histogram/histogram.h
+diff --git a/external/local_xla/xla/tsl/protobuf/rpc_options.proto b/xla/tsl/protobuf/rpc_options.proto
+similarity index 94%
+rename from external/local_xla/xla/tsl/protobuf/rpc_options.proto
+rename to xla/tsl/protobuf/rpc_options.proto
+index 35c5dbe..7169993 100755
+--- a/external/local_xla/xla/tsl/protobuf/rpc_options.proto
++++ b/xla/tsl/protobuf/rpc_options.proto
+@@ -2,7 +2,7 @@ syntax = "proto3";
+ 
+ package tensorflow;
+ 
+-option go_package = "github.com/google/tsl/tsl/go/protobuf/for_core_protos_go_proto";
++option go_package = "github.com/tensorflow/tensorflow/tensorflow/go/xla/tsl/protobuf/for_core_protos_go_proto";
+ 
+ // RPC options for distributed runtime.
+ message RPCOptions {
+diff --git a/external/local_xla/xla/tsl/protobuf/status.proto b/xla/tsl/protobuf/status.proto
+similarity index 82%
+rename from external/local_xla/xla/tsl/protobuf/status.proto
+rename to xla/tsl/protobuf/status.proto
+index b61383c..f62bf50 100755
+--- a/external/local_xla/xla/tsl/protobuf/status.proto
++++ b/xla/tsl/protobuf/status.proto
+@@ -7,7 +7,7 @@ import "xla/tsl/protobuf/error_codes.proto";
+ option cc_enable_arenas = true;
+ option java_multiple_files = true;
+ option java_package = "org.tensorflow.framework";
+-option go_package = "github.com/google/tsl/tsl/go/protobuf/for_core_protos_go_proto";
++option go_package = "github.com/tensorflow/tensorflow/tensorflow/go/xla/tsl/protobuf/for_core_protos_go_proto";
+ 
+ // Wire-format for Status.
+ // Next tag: 4
 diff --git a/external/local_xla/xla/tsl/protobuf/test_log.proto b/xla/tsl/protobuf/test_log.proto
 similarity index 98%
 rename from external/local_xla/xla/tsl/protobuf/test_log.proto
 rename to xla/tsl/protobuf/test_log.proto
-index 6d3af02..323b1bb 100644
+index 6d3af02..a6ebbef 100755
 --- a/external/local_xla/xla/tsl/protobuf/test_log.proto
 +++ b/xla/tsl/protobuf/test_log.proto
 @@ -10,6 +10,7 @@ option cc_enable_arenas = true;
  option java_outer_classname = "TestLogProtos";
  option java_multiple_files = true;
  option java_package = "org.tensorflow.util.testlog";
-+option go_package = "github.com/tensorflow/tensorflow/tensorflow/go/tsl/protobuf/for_core_protos_go_proto";
++option go_package = "github.com/tensorflow/tensorflow/tensorflow/go/xla/tsl/protobuf/for_core_protos_go_proto";
  
  message EntryValue {
    oneof kind {
