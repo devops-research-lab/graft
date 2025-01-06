@@ -35,6 +35,7 @@ var ProfileOptions_DeviceType_value = for_profiler_protos_go_proto.ProfileOption
 
 type ProfileOptions = for_profiler_protos_go_proto.ProfileOptions
 type RemoteProfilerSessionManagerOptions = for_profiler_protos_go_proto.RemoteProfilerSessionManagerOptions
+type ProfileOptions_TraceOptions = for_profiler_protos_go_proto.ProfileOptions_TraceOptions
 
 var File_tensorflow_core_profiler_profiler_options_proto protoreflect.FileDescriptor
 
