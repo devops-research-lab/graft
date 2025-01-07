@@ -1,5 +1,5 @@
 # Graft
-[![tensorflow version](https://img.shields.io/badge/tf-v2.17.0-FF6F00?logo=tensorflow&logoColor=FF6F00)](https://github.com/tensorflow/tensorflow/tree/v2.17.0)
+[![tensorflow version](https://img.shields.io/badge/tf-v2.17.1-FF6F00?logo=tensorflow&logoColor=FF6F00)](https://github.com/tensorflow/tensorflow/tree/v2.17.1)
 [![build](https://img.shields.io/github/actions/workflow/status/wamuir/graft/build-and-test-bindings.yml?branch=r0.9&label=build&logo=github)](https://github.com/wamuir/graft/actions/workflows/test.yml?query=branch%3Ar0.9)
 [![go.dev reference](https://pkg.go.dev/badge/wamuir/graft)](https://pkg.go.dev/github.com/wamuir/graft/tensorflow)
 

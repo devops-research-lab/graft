@@ -12,8 +12,8 @@ def tf_repositories(ctx):
         patch_args = ["-p1"],
         patches = [],
         strip_prefix = "",
-        urls = ["https://storage.googleapis.com/tensorflow/versions/2.17.0/libtensorflow-cpu-linux-x86_64.tar.gz"],
-        sha256 = "a941e18edfaf15dfbb6f32bd3831114b0dd788377c8bdc05cb667d18971c95f2",
+        urls = ["https://storage.googleapis.com/tensorflow/versions/2.17.1/libtensorflow-cpu-linux-x86_64.tar.gz"],
+        sha256 = "4a0fdd51f2ab5254b506c1ef5f3c883fc376a44de18ac5ef2b5bf303003c6cf9",
     )
 
     http_archive(
@@ -22,8 +22,8 @@ def tf_repositories(ctx):
         patch_args = ["-p1"],
         patches = [],
         strip_prefix = "",
-        urls = ["https://storage.googleapis.com/tensorflow/versions/2.17.0/libtensorflow-gpu-linux-x86_64.tar.gz"],
-        sha256 = "49d0af29b2d2592dce77ef56ebe9d0f1f2d1c3bb17458c9705d0e62e625fa5d2",
+        urls = ["https://storage.googleapis.com/tensorflow/versions/2.17.1/libtensorflow-gpu-linux-x86_64.tar.gz"],
+        sha256 = "a96b43868c30faa00ce6e910c6f5078c879d5d3d98c4728fe1aaf2e147a009e2",
     )
 
     http_archive(
@@ -32,8 +32,8 @@ def tf_repositories(ctx):
         patch_args = ["-p1"],
         patches = [],
         strip_prefix = "",
-        urls = ["https://storage.googleapis.com/tensorflow/versions/2.17.0/libtensorflow-cpu-darwin-arm64.tar.gz"],
-        sha256 = "96625cfe219b04f6b0da1ca5bb5120b02f334a8f39f5d6a0628a541e5e62b00c",
+        urls = ["https://storage.googleapis.com/tensorflow/versions/2.17.1/libtensorflow-cpu-darwin-arm64.tar.gz"],
+        sha256 = "02e055bd102b834b609f604c7072c29789ce93723bfa7bd28727a7adb8e8d812",
     )
 
     http_archive(
@@ -54,9 +54,9 @@ def tf_repositories(ctx):
             "@graft//third_party/org_tensorflow/libtensorflow_proto:libtensorflow_proto.patch",
             "@graft//third_party/org_tensorflow/libtensorflow_proto:libtensorflow_proto_tsl.patch",
         ],
-        strip_prefix = "libtensorflow-proto-2.17.0",
-        urls = ["https://github.com/wamuir/libtensorflow-proto/archive/refs/tags/v2.17.0.tar.gz"],
-        sha256 = "4f05b3537a4feaa5564e84243ec43e478585d31e932c9e3f6e75c0526f64d22e",
+        strip_prefix = "libtensorflow-proto-2.17.1",
+        urls = ["https://github.com/wamuir/libtensorflow-proto/archive/refs/tags/v2.17.1.tar.gz"],
+        sha256 = "37935f4560ea76d7f2f8bf1bf1cfe307c7cd7f643f0304727dcd9744d4e8e347",
     )
 
     http_archive(
@@ -66,9 +66,9 @@ def tf_repositories(ctx):
         patches = [
             "@graft//third_party/org_tensorflow/tensorflow_serving_proto:tensorflow_serving_proto.patch",
         ],
-        strip_prefix = "tensorflow-serving-proto-2.17.0",
-        urls = ["https://github.com/wamuir/tensorflow-serving-proto/archive/refs/tags/v2.17.0.tar.gz"],
-        sha256 = "c2a8de179fb608d26e140032bf3561948fe6496d86e8eb6e22fd2300279d7097",
+        strip_prefix = "tensorflow-serving-proto-2.17.1",
+        urls = ["https://github.com/wamuir/tensorflow-serving-proto/archive/refs/tags/v2.17.1.tar.gz"],
+        sha256 = "4061a6c087c22ee411ba53b9b5e8621a3040dc6abcf4fa80bdd2dd1aaf1e5620",
     )
 
     ###########################################################################
@@ -80,9 +80,9 @@ def tf_repositories(ctx):
         build_file = "@graft//third_party/org_tensorflow/tensorflow_base_api_def:tensorflow_base_api_def.BUILD",
         patch_args = ["-p1"],
         patches = [],
-        strip_prefix = "tensorflow-2.17.0/tensorflow/core/api_def/base_api",
-        urls = ["https://github.com/tensorflow/tensorflow/archive/refs/tags/v2.17.0.tar.gz"],
-        sha256 = "9cc4d5773b8ee910079baaecb4086d0c28939f024dd74b33fc5e64779b6533dc",
+        strip_prefix = "tensorflow-2.17.1/tensorflow/core/api_def/base_api",
+        urls = ["https://github.com/tensorflow/tensorflow/archive/refs/tags/v2.17.1.tar.gz"],
+        sha256 = "2d3cfb48510f92f3a52fb05b820481c6f066a342a9f5296fe26d72c4ea757700",
     )
 
     ###########################################################################
@@ -96,9 +96,9 @@ def tf_repositories(ctx):
         patches = [
             "@graft//third_party/org_tensorflow/tensorflow_go:tensorflow_go_op.patch",
         ],
-        strip_prefix = "tensorflow-2.17.0/tensorflow/go",
-        urls = ["https://github.com/tensorflow/tensorflow/archive/refs/tags/v2.17.0.tar.gz"],
-        sha256 = "9cc4d5773b8ee910079baaecb4086d0c28939f024dd74b33fc5e64779b6533dc",
+        strip_prefix = "tensorflow-2.17.1/tensorflow/go",
+        urls = ["https://github.com/tensorflow/tensorflow/archive/refs/tags/v2.17.1.tar.gz"],
+        sha256 = "2d3cfb48510f92f3a52fb05b820481c6f066a342a9f5296fe26d72c4ea757700",
     )
 
 download_tf_repositories = module_extension(
