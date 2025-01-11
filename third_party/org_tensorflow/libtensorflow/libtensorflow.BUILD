@@ -13,17 +13,17 @@ ALL_FILES = glob(
     ],
 )
 
-C_HEADERS = [f.replace("include/external/local_tsl/tsl", "include/tsl") for f in glob(["include/**/*.h"])]
+C_HEADERS = [f.replace("include/external/local_tsl/tsl", "include/tsl") for f in glob(["include/**/*.h"], allow_empty = True)]
 
 genrule(
     name = "repath_tsl_headers",
-    srcs = glob(["include/external/local_tsl/tsl/**/*.h"]),
-    outs = [f.replace("include/external/local_tsl/tsl", "include/tsl") for f in glob(["include/external/local_tsl/tsl/**/*.h"])],
+    srcs = glob(["include/external/local_tsl/tsl/**/*.h"], allow_empty = True),
+    outs = [f.replace("include/external/local_tsl/tsl", "include/tsl") for f in glob(["include/external/local_tsl/tsl/**/*.h"], allow_empty = True)],
     cmd = "\n".join(["mkdir -p $$(dirname $(location %s)) && cp $(location %s) $(location :%s)" % (
         f,
         f,
         f.replace("include/external/local_tsl/tsl", "include/tsl"),
-    ) for f in glob(["include/external/local_tsl/tsl/**/*.h"])]),
+    ) for f in glob(["include/external/local_tsl/tsl/**/*.h"], allow_empty = True)]),
 )
 
 # exclude symlinks (symlinks not preserved by rule_pkg)

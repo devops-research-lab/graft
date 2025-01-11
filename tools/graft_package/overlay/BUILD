@@ -24,6 +24,7 @@ pkg_tar(
     name = "overlay",
     srcs = glob(
         ["**/*"],
+	allow_empty = True,
         exclude = ["BUILD"] + IN_FILES,
     ) + [f.replace(".in", "") for f in IN_FILES],
     extension = ".tar.gz",

@@ -20,7 +20,7 @@ pkg_tar(
     name = "libtensorflow_proto",
     srcs = ["@libtensorflow_proto//:protos_all_proto_srcs"],
     remap_paths = {
-        "external/_main~download_tf_repositories~libtensorflow_proto": "",
+        "external/+download_tf_repositories+libtensorflow_proto": "",
     },
     strip_prefix = "/external/libtensorflow_proto",
     visibility = ["//:__subpackages__"],
@@ -30,7 +30,7 @@ pkg_tar(
     name = "tensorflow_serving_proto",
     srcs = ["@tensorflow_serving_proto//:protos_all_proto_srcs"],
     remap_paths = {
-        "external/_main~download_tf_repositories~tensorflow_serving_proto": "",
+        "external/+download_tf_repositories+tensorflow_serving_proto": "",
     },
     strip_prefix = "/external/tensorflow_serving_proto",
     visibility = ["//:__subpackages__"],
@@ -45,10 +45,10 @@ pkg_tar(
         "//conditions:default": ["@libtensorflow_other_build//:pkg_files"],
     }),
     remap_paths = {
-        "external/_main~download_tf_repositories~libtensorflow_linux_x86_64_cpu": "",
-        "external/_main~download_tf_repositories~libtensorflow_linux_x86_64_gpu": "",
-        "external/_main~download_tf_repositories~libtensorflow_macos_arm_64_cpu": "",
-        "external/_main~download_tf_repositories~libtensorflow_other_build": "",
+        "external/+download_tf_repositories+libtensorflow_linux_x86_64_cpu": "",
+        "external/+download_tf_repositories+libtensorflow_linux_x86_64_gpu": "",
+        "external/+download_tf_repositories+libtensorflow_macos_arm_64_cpu": "",
+        "external/+download_tf_repositories+libtensorflow_other_build": "",
     },
     strip_prefix = select({
         "//tools/conditions:linux_x86_64_cpu": "/external/libtensorflow_linux_x86_64_cpu",
@@ -79,7 +79,7 @@ pkg_tar(
     mode = "0644",
     package_dir = "src/github.com/tensorflow/tensorflow/tensorflow/go",
     remap_paths = {
-        "external/_main~download_tf_repositories~tensorflow_go": "",
+        "external/+download_tf_repositories+tensorflow_go": "",
     },
     strip_prefix = "/external/tensorflow_go",
     visibility = ["//:__subpackages__"],
