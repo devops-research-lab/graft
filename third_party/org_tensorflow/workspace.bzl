@@ -81,7 +81,10 @@ def tf_repositories(ctx):
         strip_prefix = "tensorflow-nightly/tensorflow/go",
         urls = ["https://github.com/tensorflow/tensorflow/archive/refs/heads/nightly.tar.gz"],
         patch_args = ["-p1"],
-        patches = ["@graft//third_party/org_tensorflow/tensorflow_go:tensorflow_go_op.patch"],
+        patches = [
+            "@graft//third_party/org_tensorflow/tensorflow_go:tensorflow_go.patch",
+            "@graft//third_party/org_tensorflow/tensorflow_go:tensorflow_go_op.patch",
+        ],
     )
 
 download_tf_repositories = module_extension(
