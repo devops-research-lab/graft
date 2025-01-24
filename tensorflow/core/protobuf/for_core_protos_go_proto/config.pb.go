@@ -325,7 +325,7 @@ type GPUOptions struct {
 	ForceGpuCompatible bool `protobuf:"varint,8,opt,name=force_gpu_compatible,json=forceGpuCompatible,proto3" json:"force_gpu_compatible,omitempty"`
 	// Everything inside experimental is subject to change and is not subject
 	// to API stability guarantees in
-	// https://www.tensorflow.org/guide/version_compat.
+	// https://www.tensorflow.org/guide/versions.
 	Experimental  *GPUOptions_Experimental `protobuf:"bytes,9,opt,name=experimental,proto3" json:"experimental,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -2043,7 +2043,7 @@ func (x *GPUOptions_Experimental_StreamMergeOptions) GetMergeDeviceToDeviceStrea
 
 // Everything inside Experimental is subject to change and is not subject
 // to API stability guarantees in
-// https://www.tensorflow.org/guide/version_compat.
+// https://www.tensorflow.org/guide/versions.
 type ConfigProto_Experimental struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Task name for group resolution.
@@ -2165,7 +2165,7 @@ type ConfigProto_Experimental struct {
 	// kernels may not be loaded due to selective registration.
 	DisableFunctionalOpsLowering bool `protobuf:"varint,21,opt,name=disable_functional_ops_lowering,json=disableFunctionalOpsLowering,proto3" json:"disable_functional_ops_lowering,omitempty"`
 	// Provides a hint to XLA auto clustering to prefer forming a single large
-	// cluster that encompases most of the graph.
+	// cluster that encompasses most of the graph.
 	XlaPreferSingleGraphCluster bool `protobuf:"varint,22,opt,name=xla_prefer_single_graph_cluster,json=xlaPreferSingleGraphCluster,proto3" json:"xla_prefer_single_graph_cluster,omitempty"`
 	// Distributed coordination service configurations.
 	CoordinationConfig *for_core_protos_go_proto.CoordinationServiceConfig `protobuf:"bytes,23,opt,name=coordination_config,json=coordinationConfig,proto3" json:"coordination_config,omitempty"`
