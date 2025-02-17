@@ -7,11 +7,11 @@ module(
 # Dependencies
 bazel_dep(
     name = "gazelle",
-    version = "0.41.0",
+    version = "0.42.0",
 )
 bazel_dep(
     name = "platforms",
-    version = "0.0.10",
+    version = "0.0.11",
 )
 bazel_dep(
     name = "protobuf",
@@ -20,7 +20,7 @@ bazel_dep(
 )
 bazel_dep(
     name = "rules_go",
-    version = "0.51.0",
+    version = "0.53.0",
 )
 bazel_dep(
     name = "rules_pkg",
@@ -63,7 +63,7 @@ bazel_dep(
 )
 bazel_dep(
     name = "stardoc",
-    version = "0.7.1",
+    version = "0.8.0",
     dev_dependency = True,
     repo_name = "io_bazel_stardoc",
 )
