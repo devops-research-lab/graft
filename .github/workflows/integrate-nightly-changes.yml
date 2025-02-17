@@ -13,10 +13,10 @@ jobs:
     outputs:
       nightly-hash: ${{ steps.lsh-remote.outputs.nightly-hash }}
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Set up Go
-        uses: actions/setup-go@v3
+        uses: actions/setup-go@v5
         with:
           go-version: 1
 
@@ -33,7 +33,7 @@ jobs:
         run: CC=clang bazelisk build --config=ci -- //tools/graft_package:go_bindings
 
       - name: Archive Go bindings
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: go_bindings
           path: bazel-bin/tools/graft_package/go_bindings.tar
@@ -46,15 +46,15 @@ jobs:
         os: [ubuntu-latest]
     runs-on: ${{ matrix.os }}
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Set up Go
-        uses: actions/setup-go@v3
+        uses: actions/setup-go@v5
         with:
           go-version: 1
 
       - name: Download go_bindings
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: go_bindings
 
@@ -77,10 +77,10 @@ jobs:
     needs: [build, test]
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Download go_bindings
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: go_bindings
 
