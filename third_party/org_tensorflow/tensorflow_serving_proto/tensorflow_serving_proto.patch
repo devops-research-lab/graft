@@ -459,7 +459,8 @@ index 31fbe94..5171d63 100644
 @@ -2,10 +2,12 @@ syntax = "proto3";
  
  package tensorflow.serving;
- 
+
+ import "google/protobuf/any.proto";
 -import "tensorflow_serving/config/log_collector_config.proto";
 +import "tensorflow/serving/config/log_collector_config.proto";
  
@@ -469,7 +470,6 @@ index 31fbe94..5171d63 100644
 +
  message SamplingConfig {
    // Requests will be logged uniformly at random with this probability.
-   // Valid range: [0, 1.0].
 diff --git a/tensorflow/serving/config/model_server_config.proto b/tensorflow/serving/config/model_server_config.proto
 index cadc2b6..b1bc2b8 100644
 --- a/tensorflow/serving/config/model_server_config.proto
