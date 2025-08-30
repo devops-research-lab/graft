@@ -1,5 +1,5 @@
 diff --git a/tensorflow/core/framework/dataset.proto b/tensorflow/core/framework/dataset.proto
-index 9dfd03b..2ccc425 100755
+index 9dfd03b..2ccc425 100644
 --- a/tensorflow/core/framework/dataset.proto
 +++ b/tensorflow/core/framework/dataset.proto
 @@ -6,6 +6,8 @@ import "tensorflow/core/framework/tensor.proto";
@@ -12,7 +12,7 @@ index 9dfd03b..2ccc425 100755
  
  // This file contains protocol buffers for working with tf.data Datasets.
 diff --git a/tensorflow/core/framework/graph_debug_info.proto b/tensorflow/core/framework/graph_debug_info.proto
-index 9a49344..c164ede 100755
+index 9a49344..c164ede 100644
 --- a/tensorflow/core/framework/graph_debug_info.proto
 +++ b/tensorflow/core/framework/graph_debug_info.proto
 @@ -6,7 +6,7 @@ option cc_enable_arenas = true;
@@ -25,7 +25,7 @@ index 9a49344..c164ede 100755
  message GraphDebugInfo {
    // This represents a file/line location in the source code.
 diff --git a/tensorflow/core/framework/optimized_function_graph.proto b/tensorflow/core/framework/optimized_function_graph.proto
-index 25008f0..8440e81 100755
+index 25008f0..8440e81 100644
 --- a/tensorflow/core/framework/optimized_function_graph.proto
 +++ b/tensorflow/core/framework/optimized_function_graph.proto
 @@ -5,6 +5,8 @@ package tensorflow;
@@ -38,7 +38,7 @@ index 25008f0..8440e81 100755
  // passes (up till before graph partitioning). The first half of the proto is
  // representing a GraphDef and the rest of the fields are extra information from
 diff --git a/tensorflow/core/grappler/costs/op_performance_data.proto b/tensorflow/core/grappler/costs/op_performance_data.proto
-index 5ef5fd9..c3e3ed7 100755
+index 5ef5fd9..c3e3ed7 100644
 --- a/tensorflow/core/grappler/costs/op_performance_data.proto
 +++ b/tensorflow/core/grappler/costs/op_performance_data.proto
 @@ -17,6 +17,7 @@ syntax = "proto3";
@@ -50,17 +50,17 @@ index 5ef5fd9..c3e3ed7 100755
  import "tensorflow/core/framework/tensor.proto";
  import "tensorflow/core/framework/tensor_shape.proto";
 diff --git a/tensorflow/core/lib/core/error_codes.proto b/tensorflow/core/lib/core/error_codes.proto
-index ccd552e..99eda2a 100755
+index 4038d59..544e397 100644
 --- a/tensorflow/core/lib/core/error_codes.proto
 +++ b/tensorflow/core/lib/core/error_codes.proto
 @@ -1,3 +1,5 @@
  syntax = "proto3";
  
- import public "xla/tsl/protobuf/error_codes.proto";
+ import public "tsl/protobuf/error_codes.proto";
 +
 +option go_package = "github.com/tensorflow/tensorflow/tensorflow/go/core/lib/core/error_codes_proto_go_proto";
 diff --git a/tensorflow/core/profiler/profiler_options.proto b/tensorflow/core/profiler/profiler_options.proto
-index 9afed8d..7337149 100755
+index 9afed8d..7337149 100644
 --- a/tensorflow/core/profiler/profiler_options.proto
 +++ b/tensorflow/core/profiler/profiler_options.proto
 @@ -3,3 +3,5 @@ syntax = "proto3";
@@ -70,7 +70,7 @@ index 9afed8d..7337149 100755
 +
 +option go_package = "github.com/tensorflow/tensorflow/tensorflow/go/core/profiler/profiler_options_proto_go_proto";
 diff --git a/tensorflow/core/profiler/protobuf/xplane.proto b/tensorflow/core/profiler/protobuf/xplane.proto
-index 69655b7..2e52b4f 100755
+index 69655b7..2e52b4f 100644
 --- a/tensorflow/core/profiler/protobuf/xplane.proto
 +++ b/tensorflow/core/profiler/protobuf/xplane.proto
 @@ -3,3 +3,5 @@ syntax = "proto3";
@@ -80,7 +80,7 @@ index 69655b7..2e52b4f 100755
 +
 +option go_package = "github.com/tensorflow/tensorflow/tensorflow/go/core/profiler/protobuf/for_profiler_protos_go_proto";
 diff --git a/tensorflow/core/util/memmapped_file_system.proto b/tensorflow/core/util/memmapped_file_system.proto
-index a988b45..587d8aa 100755
+index a988b45..587d8aa 100644
 --- a/tensorflow/core/util/memmapped_file_system.proto
 +++ b/tensorflow/core/util/memmapped_file_system.proto
 @@ -17,6 +17,7 @@ syntax = "proto3";
@@ -92,7 +92,7 @@ index a988b45..587d8aa 100755
  // A message that describes one region of memmapped file.
  message MemmappedFileSystemDirectoryElement {
 diff --git a/tensorflow/core/util/saved_tensor_slice.proto b/tensorflow/core/util/saved_tensor_slice.proto
-index 6278685..671ce1e 100755
+index 6278685..671ce1e 100644
 --- a/tensorflow/core/util/saved_tensor_slice.proto
 +++ b/tensorflow/core/util/saved_tensor_slice.proto
 @@ -18,7 +18,9 @@
@@ -106,7 +106,7 @@ index 6278685..671ce1e 100755
  option java_multiple_files = true;
  option java_package = "org.tensorflow.util";
 diff --git a/tensorflow/core/util/test_log.proto b/tensorflow/core/util/test_log.proto
-index 8d78d27..9bc3dbc 100755
+index 8d78d27..9bc3dbc 100644
 --- a/tensorflow/core/util/test_log.proto
 +++ b/tensorflow/core/util/test_log.proto
 @@ -4,3 +4,5 @@ syntax = "proto3";
