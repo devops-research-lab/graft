@@ -9,7 +9,7 @@
 package test_log_proto_go_proto
 
 import (
-	for_core_protos_go_proto "github.com/wamuir/graft/tensorflow/xla/tsl/protobuf/for_core_protos_go_proto"
+	for_core_protos_go_proto "github.com/wamuir/graft/tensorflow/tsl/protobuf/for_core_protos_go_proto"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	reflect "reflect"
