@@ -1,113 +1,77 @@
----
 name: nightly
-
 on:
-  schedule:
-    - cron: '00 18 * * *'
-  workflow_dispatch:
-
+  push: null
 jobs:
-
-  build:
-    runs-on: ubuntu-latest
-    outputs:
-      nightly-hash: ${{ steps.lsh-remote.outputs.nightly-hash }}
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Set up Go
-        uses: actions/setup-go@v5
-        with:
-          go-version: 1
-
-      - name: Get commit hash
-        id: lsh-remote
-        run: |
-          H=$(git ls-remote -h https://github.com/tensorflow/tensorflow nightly)
-          echo "nightly-hash=$(echo ${H} | awk '{ print $1 }')" >> $GITHUB_OUTPUT
-
-      - name: Log Bazel version
-        run: bazelisk version
-
-      - name: Build Go bindings
-        run: CC=clang bazelisk build --config=ci -- //tools/graft_package:go_bindings
-
-      - name: Archive Go bindings
-        uses: actions/upload-artifact@v4
-        with:
-          name: go_bindings
-          path: bazel-bin/tools/graft_package/go_bindings.tar
-          retention-days: 3
-
   test:
     needs: build
     strategy:
       matrix:
-        os: [ubuntu-latest]
+        os:
+        - ubuntu-latest
     runs-on: ${{ matrix.os }}
     steps:
-      - uses: actions/checkout@v4
+    - uses: actions/checkout@v4
+    - name: Set up Go
+      uses: actions/setup-go@v5
+      with:
+        go-version: 1
+    - name: Download go_bindings
+      uses: actions/download-artifact@v4
+      with:
+        name: go_bindings
+    - name: Update bindings
+      run: "rm -rf tensorflow\ntar x --strip-components=5 \\\n  -f go_bindings.tar \\\n  ./src/github.com/wamuir/graft/tensorflow\n\
+        rm go_bindings.tar\n"
+    - name: Run gazelle
+      run: 'CC=clang bazelisk run //:gazelle
 
-      - name: Set up Go
-        uses: actions/setup-go@v5
-        with:
-          go-version: 1
-
-      - name: Download go_bindings
-        uses: actions/download-artifact@v4
-        with:
-          name: go_bindings
-
-      - name: Update bindings
-        run: |
-          rm -rf tensorflow
-          tar x --strip-components=5 \
-            -f go_bindings.tar \
-            ./src/github.com/wamuir/graft/tensorflow
-          rm go_bindings.tar
-
-      - name: Run gazelle
-        run: |
-          CC=clang bazelisk run //:gazelle
-
-      - name: Test bindings
-        run: CC=clang bazelisk test --config=ci -- //tensorflow/...
-
-  commit:
-    needs: [build, test]
+        '
+    - name: Test bindings
+      run: CC=clang bazelisk test --config=ci -- //tensorflow/...
+  build:
     runs-on: ubuntu-latest
+    needs: test
+    outputs:
+      nightly-hash: ${{ steps.lsh-remote.outputs.nightly-hash }}
     steps:
-      - uses: actions/checkout@v4
+    - uses: actions/checkout@v4
+    - name: Set up Go
+      uses: actions/setup-go@v5
+      with:
+        go-version: 1
+    - name: Get commit hash
+      id: lsh-remote
+      run: 'H=$(git ls-remote -h https://github.com/tensorflow/tensorflow nightly)
 
-      - name: Download go_bindings
-        uses: actions/download-artifact@v4
-        with:
-          name: go_bindings
+        echo "nightly-hash=$(echo ${H} | awk ''{ print $1 }'')" >> $GITHUB_OUTPUT
 
-      - name: Update bindings
-        run: |
-          rm -rf tensorflow
-          tar x --strip-components=5 \
-            -f go_bindings.tar \
-            ./src/github.com/wamuir/graft/tensorflow
-          rm go_bindings.tar
+        '
+    - name: Log Bazel version
+      run: bazelisk version
+    - name: Build Go bindings
+      run: CC=clang bazelisk build --config=ci -- //tools/graft_package:go_bindings
+    - name: Archive Go bindings
+      uses: actions/upload-artifact@v4
+      with:
+        name: go_bindings
+        path: bazel-bin/tools/graft_package/go_bindings.tar
+        retention-days: 3
+    - name: Update bindings
+      run: "rm -rf tensorflow\ntar x --strip-components=5 \\\n  -f go_bindings.tar \\\n  ./src/github.com/wamuir/graft/tensorflow\n\
+        rm go_bindings.tar\n"
+    - name: Run gazelle
+      run: 'CC=clang bazelisk run //:gazelle
 
-      - name: Run gazelle
-        run: |
-          CC=clang bazelisk run //:gazelle
+        '
+    - name: Check working tree for changes
+      id: git-status
+      run: 'M=$([ -n "$(git status --porcelain tensorflow)" ] && echo true || echo false)
 
-      - name: Check working tree for changes
-        id: git-status
-        run: |
-          M=$([ -n "$(git status --porcelain tensorflow)" ] && echo true || echo false)
-          echo "repo-changes=${M}" >> $GITHUB_OUTPUT
+        echo "repo-changes=${M}" >> $GITHUB_OUTPUT
 
-      - name: Commit changes
-        if: ${{ steps.git-status.outputs.repo-changes == 'true' }}
-        run: |
-          git config --global user.name 'William Muir'
-          git config --global user.email 'wamuir@gmail.com'
-          git add tensorflow/
-          git commit -m "[automated] Integrate changes from nightly build" \
-            -m "tensorflow/tensorflow@${{ needs.build.outputs.nightly-hash }}"
-          git push
+        '
+    - name: Commit changes
+      if: ${{ steps.git-status.outputs.repo-changes == 'true' }}
+      run: "git config --global user.name 'William Muir'\ngit config --global user.email 'wamuir@gmail.com'\n\
+        git add tensorflow/\ngit commit -m \"[automated] Integrate changes from nightly build\" \\\n \
+        \ -m \"tensorflow/tensorflow@${{ steps.lsh-remote.outputs.nightly-hash }}\"\ngit push\n"
